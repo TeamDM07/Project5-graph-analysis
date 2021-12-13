@@ -11,6 +11,9 @@ start = timeit.default_timer()
 # pandas ефективніший для цього завдання, але пхд його не можна юзати
 
 def read_data1(path_to_file):
+    """
+    вертає список таплів зі стрінгами вершин ребра
+    """
     with open(path_to_file, 'r') as file:
         res = []
         for line in file:
