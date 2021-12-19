@@ -1,0 +1,88 @@
+import timeit
+
+start = timeit.default_timer()
+
+all_verticles = set()
+
+
+def read_data1(path_to_file):
+    """
+    вертає список таплів зі стрінгами вершин ребра
+    """
+    with open(path_to_file, 'r') as file:
+        res = []
+        file.readline()
+        for line in file:
+            res.append(tuple(line.strip('\n').split()))
+        return res
+
+
+def creating_dict(res):
+    """
+    Створює словник з результату функції read_data1
+    Each vertex has its 'own' vertexes - it is a value of returned
+    dict, when a key as verticle is passed.
+    """
+    res_dict = dict()
+    for tpl in res:
+
+        res_dict[int(tpl[0])] = res_dict.get(int(tpl[0]), []) + [int(tpl[1])]
+        all_verticles.add(int(tpl[0]))
+        all_verticles.add(int(tpl[1]))
+    return res_dict
+
+
+def components(vertices):
+    stack = []
+    uv_set = set()
+    num = {}
+    component = {}
+    count = 0
+    for v in all_verticles:
+        count+=1
+        if v not in uv_set:
+            stack.append(v)
+            component[v] = {v}
+            num[v] = v
+            while stack:
+                print(len(stack))
+                if stack[-1] in vertices and vertices[stack[-1]]:
+                    for i in vertices[stack[-1]]:
+                        temp = stack[-1]
+                        if i not in uv_set:
+                            stack.append(i)
+                            component[v].add(i)
+                            if i in list(num.keys()):
+                                component[v] = component[v].union(component[num[i]])
+                                temp_num = num[i]
+                                for j in component[num[i]]:
+                                    num[j] = num[v]
+                                if i != v:
+                                    del component[temp_num]
+                            num[i] = num[v]
+                            uv_set.add(i)
+                        elif num[i] != num[v]:
+                            component[v] = component[v].union(component[num[i]])
+                            temp_num = num[i]
+                            for j in component[num[i]]:
+                                num[j] = num[v]
+                            if i != v:
+                                del component[temp_num]
+                            num[i] = num[v]
+                    vertices[temp] = []
+
+                else:
+                    stack.pop()
+
+        vertices[v] = []
+    return component
+
+
+comp = components(creating_dict(read_data1('graph_100000_4997346_0.csv')))
+
+print("LENGTH: " + str(len(comp)))
+# print(comp)
+stop = timeit.default_timer()
+execution_time = stop - start
+
+print("Program Executed in "+str(execution_time))
