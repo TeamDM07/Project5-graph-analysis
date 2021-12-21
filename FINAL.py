@@ -289,17 +289,6 @@ def _tests(line: str):
     print(f"networkx implementation:{end:.5f}")
     print(f"Valid: {len(temp) == temp2}")
 
-    print("Articulation points")
-    start = default_timer()
-    temp = list(articulation_points(line))
-    end = default_timer() - start
-    print(f"module implementation:{end:.5f}")
-    start = default_timer()
-    temp2 = list(nx.articulation_points(graph))
-    end = default_timer() - start
-    print(f"networkx implementation:{end:.5f}")
-    print(f"Valid: {len(temp) == len(temp2)}")
-
     print("Bridges")
     start = default_timer()
     temp = list(executing_func_for_bridges(line))
@@ -307,6 +296,17 @@ def _tests(line: str):
     print(f"module implementation:{end:.5f}")
     start = default_timer()
     temp2 = list(nx.bridges(graph))
+    end = default_timer() - start
+    print(f"networkx implementation:{end:.5f}")
+    print(f"Valid: {len(temp) == len(temp2)}")
+    
+    print("Articulation points")
+    start = default_timer()
+    temp = list(articulation_points(line))
+    end = default_timer() - start
+    print(f"module implementation:{end:.5f}")
+    start = default_timer()
+    temp2 = list(nx.articulation_points(graph))
     end = default_timer() - start
     print(f"networkx implementation:{end:.5f}")
     print(f"Valid: {len(temp) == len(temp2)}")
