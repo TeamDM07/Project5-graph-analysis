@@ -73,6 +73,9 @@ def write_csv(graph, path):
 
 
 def connectivity(path):
+    """
+    Finds all components of the given undirected graph
+    """
 
     lst = read_data(path, "tuple")
     vertice_component = {}
@@ -105,7 +108,36 @@ def connectivity(path):
     return components
 
 
+def connectivity_output_wrapper(path):
+    """
+    Function gets output of connectivity function and returns list of all components(each component is characterized by
+    the least vertex in that component)
+    """
+    start = default_timer()
+
+    comp = connectivity(path)
+
+    least_verticles_lst = []
+    for key in comp:
+        least_verticles_lst.append(min(comp[key]))
+
+    # print(comp)
+    # print("LENGTH: " + str(len(comp)))
+    # print(least_verticles_lst)
+
+    stop = default_timer()
+    execution_time = stop - start
+
+    # print("Program Executed in " + str(execution_time))
+
+    return least_verticles_lst
+
+
 def strong_connectivity(path):
+    """
+    Finds all strongly connected components of the given directed graph
+    """
+
     arcs, all_verticles = read_data(path, "dict", unoriented=False, get_vertices=True)
     low_links = {num: num for num in all_verticles}
     id = {}
@@ -160,6 +192,32 @@ def strong_connectivity(path):
 
                     stack.pop()
     return components
+
+
+def strong_connectivity_output_wrapper(path):
+    """
+    Function gets output of strong_connectivity function and returns list of all strong connectivity components
+    (each component is characterized by the least vertex in that component)
+    """
+    start = default_timer()
+
+    comp = strong_connectivity(path)
+
+    least_verticles_lst = []
+
+    for key in comp:
+        least_verticles_lst.append(min(comp[key]))
+
+    # print(comp)
+    # print("LENGTH: " + str(len(comp)))
+    # print(least_verticles_lst)
+
+    stop = default_timer()
+    execution_time = stop - start
+
+    # print("Program Executed in " + str(execution_time))
+
+    return least_verticles_lst
 
 
 def articulation_points(path: str):
@@ -289,17 +347,6 @@ def _tests(line: str):
     print(f"networkx implementation:{end:.5f}")
     print(f"Valid: {len(temp) == temp2}")
 
-    print("Bridges")
-    start = default_timer()
-    temp = list(executing_func_for_bridges(line))
-    end = default_timer() - start
-    print(f"module implementation:{end:.5f}")
-    start = default_timer()
-    temp2 = list(nx.bridges(graph))
-    end = default_timer() - start
-    print(f"networkx implementation:{end:.5f}")
-    print(f"Valid: {len(temp) == len(temp2)}")
-    
     print("Articulation points")
     start = default_timer()
     temp = list(articulation_points(line))
@@ -307,6 +354,17 @@ def _tests(line: str):
     print(f"module implementation:{end:.5f}")
     start = default_timer()
     temp2 = list(nx.articulation_points(graph))
+    end = default_timer() - start
+    print(f"networkx implementation:{end:.5f}")
+    print(f"Valid: {len(temp) == len(temp2)}")
+
+    print("Bridges")
+    start = default_timer()
+    temp = list(executing_func_for_bridges(line))
+    end = default_timer() - start
+    print(f"module implementation:{end:.5f}")
+    start = default_timer()
+    temp2 = list(nx.bridges(graph))
     end = default_timer() - start
     print(f"networkx implementation:{end:.5f}")
     print(f"Valid: {len(temp) == len(temp2)}")
