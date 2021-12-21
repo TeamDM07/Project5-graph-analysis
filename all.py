@@ -192,17 +192,17 @@ def bridge_finder(graph):
             if not visits_tracker[nex]:
                 depth_search(nex, i, bridges, appropriated_num)
                 low_value[i] = min(low_value[i], low_value[nex])
-                print(index_tracker[i], low_value[nex])
+                # print(index_tracker[i], low_value[nex])
                 if index_tracker[i]<low_value[nex]:
                     bridges.append([i, nex])
-                    print(bridges)
+                    # print(bridges)
             else:
                 low_value[i] = min(low_value[i], index_tracker[nex])
 
     for j in range(len(graph)):
         if not visits_tracker[j]:
             depth_search(j, -1, bridges)
-    print(bridges)
+    # print(bridges)
     return bridges
 
 def biection(components, graph):
@@ -214,7 +214,7 @@ def biection(components, graph):
             for linked_node in graph[node]:
                 next_node_index=component.index(linked_node)
                 special_format[node_index].append(next_node_index)
-        yield special_format, component
+        yield sorted(special_format), component
 
 def executing_func_for_bridges(path):
     graph = read_data(path, 'dict')
@@ -224,9 +224,9 @@ def executing_func_for_bridges(path):
     for subgraph, component in biection(components, graph):
         # print(subgraph)
         bridges=bridge_finder(subgraph)
-        for i, edge in enumerate(bridges):
-            bridges[i]=[component[edge[0]], component[edge[1]]]
-        all_bridges.append(bridges)
+        for edge in bridges:
+            all_bridges.append([component[edge[0]], component[edge[1]]])
+        # all_bridges.append(bridges)
     return all_bridges
 
-# print(executing_func_for_bridges('graph_100_2160_1.csv'))
+# print(len(executing_func_for_bridges('graph_100000_4999_0.csv')))
