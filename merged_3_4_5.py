@@ -7,6 +7,7 @@ from timeit import default_timer
 import logging
 import networkx as nx  # comment if necessary
 import sys
+import csv
 
 sys.setrecursionlimit(100000)  # just in case
 
@@ -58,6 +59,16 @@ def read_data(path: str, return_type: str, unoriented=True, get_vertices=False):
     except FileNotFoundError as not_found_e:
         logger.exception(f"Caught exception at {read_data.__name__}")
     except ValueError as val_e:
+        logger.exception(f"Caught exception at {read_data.__name__}")
+
+
+def write_csv(graph, path):
+    try:
+        with open(path, 'w') as file:
+            for i in graph:
+                file.write(str(i[0]) + " " + str(i[1]))
+                file.write("\n")
+    except IOError as io_e:
         logger.exception(f"Caught exception at {read_data.__name__}")
 
 
