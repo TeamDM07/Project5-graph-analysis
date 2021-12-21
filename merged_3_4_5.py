@@ -1,18 +1,14 @@
-import timeit
-import logging
-
 """
 Library for the work with graphs
-Authors: DM-7 
+Authors: DM-7
 Sofia Solodka, Oleksandr Kushnir, Dmytro Mykytenko, Polyova Anna, Shchur Oleksandr
 """
+import timeit
+import logging
+import networkx as nx      # comment if necessary
+
 logging.basicConfig(format='%(asctime)s  [%(levelname)s]  -  %(name)s  -  %(message)s', level=logging.ERROR)
 logger = logging.getLogger('analysis.py')
-
-
-def return_data(path):
-    import os
-    return [f'{path}\\{x}' for x in os.listdir(path)]
 
 
 def read_data(path: str, return_type: str, unoriented=True, get_vertices=False):
@@ -163,8 +159,22 @@ def articulation_points(path: str):
                 children += 1
         if not p and children > 1:
             connection_p.add(v)
-        #logger.debug(connection_p)
     for vert in data:
         DFS(vert, timer)
-    logger.debug('finished')
     return connection_p
+
+
+def _tests(path:str):
+    """
+    Tests for module
+    """
+    df = read_data(path, 'tuple')
+    logger.debug(f'Read file ')
+    graph = nx.Graph(df)
+    graph1 = nx.DiGraph(df)
+    print('Connected component func is valid:', end=' ')
+    print(len(components(path)) == nx.number_connected_components(graph))
+    print('Strong connected component func is valid:', end=' ')
+    print(len(strong_connectivity(path)) == nx.number_strongly_connected_components(graph1))
+    print('Articulation points func is valid:', end=' ')
+    print(len(list(articulation_points(path))) == len(list(nx.articulation_points(graph))))
