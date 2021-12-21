@@ -27,7 +27,27 @@ def bridge_finder(graph):
             depth_search(j, -1, bridges)
     return bridges
 
-def biection(component):
-    pass
+def biection(components, graph):
+    for component in components:
+        component=sorted([component]+list(components[component]))
+        special_format = [[i] for i in range(len(component))]
+        for node in component:
+            node_index=component.index(node)
+            for linked_node in graph[node]:
+                next_node_index=component.index(linked_node)
+                special_format[node_index].append(next_node_index)
+                special_format[next_node_index].append(node_index)
+        yield special_format, component
 
-print(bridge_finder(sorted([[0,1,2],[1,2,0],[3,5,4],[2,1,0,4],[4,3,2],[5,3]])))
+def executing_func(components, graph):
+    all_bridges=[]
+    for subgraph, component in biection(components, graph):
+        bridges=bridge_finder(subgraph)
+        for i, edge in enumerate[bridges]:
+            bridges[i]=[component[edge[0]], component[edge[1]]]
+        all_bridges.append(bridges)
+    return all_bridges
+
+
+
+# print(bridge_finder(sorted([[0,1,2,0,2,3,2,2],[1,2,1,0],[3,5,4],[2,1,0,4,0,0],[4,3,2],[5,3]])))
