@@ -11,6 +11,7 @@ import csv
 
 sys.setrecursionlimit(100000)  # just in case
 
+# logging configuration
 logging.basicConfig(
     format="%(asctime)s  [%(levelname)s]  -  %(name)s  -  %(message)s",
     level=logging.ERROR,
@@ -21,9 +22,12 @@ logger = logging.getLogger()
 def read_data(path: str, return_type: str, unoriented=True, get_vertices=False):
     logger.debug(f"Called {read_data.__name__}, path: {path}")
     try:
+        #opening file
         with open(path, "r") as file:
+            #reading first unnecessary line
             file.readline()
             logger.debug(f"type: {return_type}")
+            # return type selector
             if return_type == "tuple":
                 res = []
                 for line in file.read().splitlines():
@@ -32,6 +36,7 @@ def read_data(path: str, return_type: str, unoriented=True, get_vertices=False):
                 res = {}
                 vertices = set()
                 data = file.read().strip("\n").split()
+                # writing data to dict and (optionally) to set
                 for i in range(0, len(data) - 1, 2):
                     node1 = int(data[i])
                     node2 = int(data[i + 1])
@@ -49,6 +54,7 @@ def read_data(path: str, return_type: str, unoriented=True, get_vertices=False):
                         else:
                             res[node2] = []
                         res[node2].append(node1)
+                # optionally returns also verices of graph
                 if get_vertices:
                     return res, vertices
             else:
@@ -221,14 +227,14 @@ def strong_connectivity_output_wrapper(path):
 
 
 def articulation_points(path: str):
-    data = read_data(path, "dict")
-    root = list(data.keys())[0]
-    used = []
-    timer = 0
-    time_in = {}
+    data = read_data(path, "dict")      # reading data from file
+    root = list(data.keys())[0]     # root vertice
+    used = []   # list of visited vertices
+    timer = 0   # depth counter
+    time_in = {}    # arrival time
     fup = {}
-    connection_p = set()
-
+    connection_p = set()    # set of articulation points
+    # DFS algorithm
     def DFS(v, timer, p=None):
         used.append(v)
         time_in[v] = timer + 1
