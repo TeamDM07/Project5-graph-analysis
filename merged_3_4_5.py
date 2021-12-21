@@ -14,7 +14,7 @@ logging.basicConfig(
     format="%(asctime)s  [%(levelname)s]  -  %(name)s  -  %(message)s",
     level=logging.ERROR,
 )
-logger = logging.getLogger("analysis.py")
+logger = logging.getLogger()
 
 
 def read_data(path: str, return_type: str, unoriented=True, get_vertices=False):
