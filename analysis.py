@@ -11,10 +11,11 @@ def return_data(path):
     return [f'{path}\\{x}' for x in os.listdir(path)]
 
 
-def read_data(path: str, get_type: str):
+def read_data(path: str, get_type: str, unoriented: bool):
     logger.debug(f'Called {read_data.__name__}, path: {path}')
     try:
         with open(path, 'r') as file:
+            file.readline()
             # pandas
             if get_type == 'pandas':
                 return pd.read_csv(names=['node', 'connection'], delim_whitespace=True)
@@ -35,13 +36,14 @@ def read_data(path: str, get_type: str):
                         pass
                     else:
                         res[node1] = []
-                    if node2 in res:
-                        pass
-                    else:
-                        res[node2] = []
                     res[node1].append(node2)
-                    res[node2].append(node1)
-                    logger.debug(f'{node1} - {node2}')
+                    if unoriented:
+                        if node2 in res:
+                            pass
+                        else:
+                            res[node2] = []
+                        res[node2].append(node1)
+                    #logger.debug(f'{node1} - {node2}')
             return res
     except FileNotFoundError as e:
         logger.exception(f'Caught exception at {read_data.__name__}')
@@ -58,6 +60,7 @@ def write_data(path: str, data: pd.DataFrame):
     except IOError as e:
         logger.exception(f'Caught exception at {write_data.__name__}')
 """
+
 
 def connection_points(data:dict):
     root = list(data.keys())[0]
@@ -94,10 +97,10 @@ def connection_points(data:dict):
 
 
 def main():
-    for i, line in enumerate(return_data('data')):
+    for i, line in enumerate(return_data('data')[2:]):
         print(f'data {i}')
         start = default_timer()
-        df = read_data(line, 'dict')
+        df = read_data(line, 'dict', True)
         print(connection_points(df))
         # logger.debug(df)
         # write_data(line, df)
