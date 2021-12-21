@@ -1,7 +1,6 @@
 import pandas as pd
 import logging
 from timeit import default_timer
-from itertools import islice
 
 logging.basicConfig(format='%(asctime)s  [%(levelname)s]  -  %(name)s  -  %(message)s', level=logging.DEBUG)
 logger = logging.getLogger('analysis.py')
@@ -30,13 +29,19 @@ def read_data(path: str, get_type: str):
                 res = {}
                 data = file.read().strip('\n').split()
                 for i in range(0, len(data) - 1, 2):
-                    temp = int(data[i])
-                    if temp in res:
+                    node1 = int(data[i])
+                    node2 = int(data[i + 1])
+                    if node1 in res:
                         pass
                     else:
-                        res[temp] = []
-                    res[temp].append(int(data[i + 1]))
-                    logger.debug(f'{temp} - {data[i + 1]}')
+                        res[node1] = []
+                    if node2 in res:
+                        pass
+                    else:
+                        res[node2] = []
+                    res[node1].append(node2)
+                    res[node2].append(node1)
+                    logger.debug(f'{node1} - {node2}')
             return res
     except FileNotFoundError as e:
         logger.exception(f'Caught exception at {read_data.__name__}')
@@ -54,52 +59,46 @@ def write_data(path: str, data: pd.DataFrame):
         logger.exception(f'Caught exception at {write_data.__name__}')
 """
 
-
-
-"""
-    dont work
-"""
-def connected_comp(data):
-    overall_comp = []
+def connection_points(data:dict):
+    root = list(data.keys())[0]
     used = []
-    comp = []
-    """
-    void dfs (int v) {
-	    used[v] = true;
-	    comp.push_back (v);
-	    for (size_t i=0; i<g[v].size(); ++i) {
-		    int to = g[v][i];
-		    if (!used[to])
-			    dfs (to);
-    """
-    def dfs(v):
+    timer = 0
+    time_in = {}
+    fup = {}
+    connection_p = set()
+    def DFS(v, timer, p = None):
         used.append(v)
-        comp.append(v)
-        for elem in data[v]:
-            if elem in used:
-                pass
+        time_in[v] = timer + 1
+        fup[v] = timer + 1
+        timer += 1
+        children = 0
+        for to in data[v]:
+            if to == p:
+                continue
+            if to in used:
+                fup[v] = min(fup.get(v), time_in[to])
             else:
-                dfs(elem)
-    for vertice in data:
-        if vertice not in used:
-            comp = []
-            dfs(vertice)
-            overall_comp.append(min(comp))
-            logger.debug(min(overall_comp))
-    logger.debug(comp)
-    return min(comp)
+                DFS(to, timer, v)
+                fup[v] = min (fup[v], fup[to])
+                if fup[to] >= time_in[v] and p:
+                    connection_p.add(v)
+                children += 1
+        if not p and children > 1:
+            connection_p.add(v)
+        #logger.debug(connection_p)
+    for vert in data:
+        DFS(vert, timer)
+    logger.debug('finished')
+    return connection_p
 
-
-def strong_component(data):
-    pass
 
 
 def main():
-    for i, line in enumerate(return_data('data')[2:]):
+    for i, line in enumerate(return_data('data')):
         print(f'data {i}')
         start = default_timer()
         df = read_data(line, 'dict')
-        print(connected_comp(df))
+        print(connection_points(df))
         # logger.debug(df)
         # write_data(line, df)
         end = default_timer() - start
